@@ -50,6 +50,8 @@ const sendMessage = async (event) => {
     // console.log(data.botResponse)
     const results = data.botResponse.split("%%");
     console.log(results)
+    const chartData = results[1].split("\n");
+    console.log(chartData);
         
 
 

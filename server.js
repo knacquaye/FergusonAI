@@ -8,24 +8,29 @@ const EventLog = require('./models/EventLog');
 const { OpenAI } = require('openai'); 
 const axios = require('axios');
 
-const systemPrompt = `You will be provided the names of two soccer players, one of two types of graph (bar or line graph), a date range and at least one of the following parameters: goals, assists. Your task is to format the requested information in numerical values so I ca chart them in a grap with the formats I provide below - you are to return no other text. In addition to returning numerical values as formatted below, return a title for the chart and one-sentence conclusion outlining the information + any interesting tidbits gathered from the data. Below is the format you must return for each type of graph (remember, only show goals if the user requests them, and same with assists). Additional details are that the title should ALWAYS be followed by %%, the conclusion should ALWAYS be preceded by %% and that they should both be unlabeled - in other words, do NOT start with Introduction nor Conclusion or anything similar, get straight to the introduction and conclusion.This means that you MUST have two times this pattern: %%, the first time right after the graph title and the second time right before the conclusion. Ensure the statistics are fully correct, and take as much time as you need:
+const systemPrompt = `You will be provided the names of two soccer players, one of two types of graph (bar or line graph), a date range and at least one of the following parameters: goals, assists. Your task is to format the requested information in numerical values so I ca chart them in a grap with the formats I provide below - you are to return no other text. In addition to returning numerical values as formatted below, return a title for the chart and one-sentence conclusion outlining the information + any interesting tidbits gathered from the data. Below is the format you must return for each type of graph (remember, only show goals if the user requests them, and same with assists). Additional details are that the title should ALWAYS be followed by %%, the conclusion should ALWAYS be preceded by %% and that they should both be unlabeled - in other words, do NOT start with Introduction, do NOT start with Conclusion or anything similar, get straight to the introduction and conclusion. You MUST have two times this pattern: %%, the first time right after the graph title and the second time right before the conclusion. For the line chart, I want you to continuously increment the number of goals and/or assists; for example, if P1 scored 4 goals in period 1 and then scored 3 goals between period 1 and 2, then put 4 + 3 = 7 goals in period 2 (obviously, same for assists). In addition, because we want to prevent too many dates, split the time period between the start and end date to ONLY 5 DATES, starting from 0 goals and 0 assists in the 0th date. Ensure the statistics are fully correct and verified, and take a deep breath and as much time as you need to get accurate information and format the response EXACTLY as I tell you:
 
 Bar:
-informative graph title
+informative graph title (remember to end with %%)
 Player1Name%Player2Name
 Player1Goals%Player2Goals
 Player1Assists%Player2Assists
-conclusion
+conclusion (remember to start with %%)
 
-Line (divide the time into equal periods and increment the goals and/or assists as the dates advance): 
-informative graph title
+Line (divide the time into five equal periods and increment the goals and/or assists as the dates advance): 
+informative graph title (remember to end with %%)
 Player1Name%Player2Name
 Date1%Player1Goals%Player2Goals
 Date1%Player1Assists%Player2Assists
-…
+Date2%Player1Goals%Player2Goals
+Date2%Player1Assists%Player2Assists
+Date3%Player1Goals%Player2Goals
+Date3%Player1Assists%Player2Assists
+Date4%Player1Goals%Player2Goals
+Date4%Player1Assists%Player2Assists
 Date5%Player1Goals%Player2Goals
 Date5%Player1Assists%Player2Assists
-conclusion`;
+conclusion (remember to start with %%)`;
 
 
 
