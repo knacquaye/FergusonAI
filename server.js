@@ -8,6 +8,25 @@ const EventLog = require('./models/EventLog');
 const { OpenAI } = require('openai'); 
 const axios = require('axios');
 
+const systemPrompt = `You will be provided the names of two soccer players, one of two types of graph (bar or line graph), a date range and at least one of the following parameters: goals, assists. Your task is to format the requested information in numerical values so I ca chart them in a grap with the formats I provide below - you are to return no other text. In addition to returning numerical values as formatted below, return a title for the chart and one-sentence conclusion outlining the information + any interesting tidbits gathered from the data. Below is the format you must return for each type of graph (remember, only show goals if the user requests them, and same with assists). Additional details are that the title should ALWAYS be followed by %%, the conclusion should ALWAYS be preceded by %% and that they should both be unlabeled - in other words, do NOT start with Introduction nor Conclusion or anything similar, get straight to the introduction and conclusion.This means that you MUST have two times this pattern: %%, the first time right after the graph title and the second time right before the conclusion. Ensure the statistics are fully correct, and take as much time as you need:
+
+Bar:
+informative graph title
+Player1Name%Player2Name
+Player1Goals%Player2Goals
+Player1Assists%Player2Assists
+conclusion
+
+Line (divide the time into equal periods and increment the goals and/or assists as the dates advance): 
+informative graph title
+Player1Name%Player2Name
+Date1%Player1Goals%Player2Goals
+Date1%Player1Assists%Player2Assists
+…
+Date5%Player1Goals%Player2Goals
+Date5%Player1Assists%Player2Assists
+conclusion`;
+
 
 
 // express app
@@ -45,9 +64,10 @@ app.post('/submit_form', async (req, res) => {
   if (!participantID) {
     return res.status(400).send('Participant ID is required');
   }
+  
   // ternary operator to check if first user input (i.e., if history exists)
-  const messages = history.length === 0 ? [{ role: 'system', content: 'You are a helpful assistant.' }, {
-  role: 'user', content: userInput }]  : [{ role: 'system', content: 'You are a helpful assistant.' }, ...history, { role: 'user', content: userInput }];
+  const messages = history.length === 0 ? [{ role: 'system', content: systemPrompt }, {
+  role: 'user', content: userInput }]  : [{ role: 'system', content: systemPrompt }, ...history, { role: 'user', content: userInput }];
   
   const bingResponse = await axios.get('https://api.bing.microsoft.com/v7.0/search', {
     params: { q: userInput }, // Use the user's input as the search query

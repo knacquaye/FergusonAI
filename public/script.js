@@ -32,7 +32,7 @@ const sendMessage = async (event) => {
         body: JSON.stringify(payload)
     });
 
-       // add user input and bot response to the conversation history
+    // add user input and bot response to the conversation history
     const data = await response.json();
 
     if (data.searchResults && data.searchResults.length > 0) {
@@ -46,6 +46,10 @@ const sendMessage = async (event) => {
         });
         messagesContainer.appendChild(searchResultsDiv);
     }
+
+    // console.log(data.botResponse)
+    const results = data.botResponse.split("%%");
+    console.log(results)
         
 
 
