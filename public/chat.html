@@ -13,7 +13,49 @@
         <div id="chat-container">
             <h1>AI Chatbot</h1>
             <div id="messages"></div>
-            <input type="text" id="user-input" placeholder="Type your message...">
+        
+            <!-- Form Elements Start Here -->
+            <label for="player1-select">Player 1:</label>
+            <select id="player1-select">
+                <option value="Player1">Player 1</option>
+                <option value="Player2">Player 2</option>
+                <option value="Player3">Player 3</option>
+                <!-- Add more players as needed -->
+            </select>
+        
+            <label for="player2-select">Player 2:</label>
+            <select id="player2-select">
+                <option value="Player1">Player 1</option>
+                <option value="Player2">Player 2</option>
+                <option value="Player3">Player 3</option>
+                <!-- Add more players as needed -->
+            </select>
+        
+            <label for="start-date">Start Date:</label>
+            <input type="date" id="start-date">
+        
+            <label for="end-date">End Date:</label>
+            <input type="date" id="end-date">
+        
+            <!-- Radio buttons for chart type selection -->
+            <fieldset>
+                <legend>Select Chart Type:</legend>
+                <input type="radio" id="bar-chart" name="chart-type" value="bar" checked>
+                <label for="bar-chart">Bar Chart</label>
+                <input type="radio" id="line-chart" name="chart-type" value="line">
+                <label for="line-chart">Line Graph</label>
+            </fieldset>
+        
+            <!-- Checkbox options for data display -->
+            <fieldset>
+                <legend>Select Data Types:</legend>
+                <input type="checkbox" id="goals" name="data-type" value="goals">
+                <label for="goals">Goals</label>
+                <input type="checkbox" id="assists" name="data-type" value="assists">
+                <label for="assists">Assists</label>
+            </fieldset>
+        
+            <!-- Send Button -->
             <button id="send-btn">Send</button>
         </div>
         <script src="script.js"></script>
