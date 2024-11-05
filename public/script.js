@@ -1,8 +1,19 @@
-const inputField = document.querySelector("#user-input");
 const sendBtn = document.querySelector("#send-btn");
 const messagesContainer = document.querySelector("#messages");
 let conversationHistory = [];
 const participantID = localStorage.getItem('participantID');
+
+
+// NEW SHIT START
+const player1Select = document.querySelector("#player1-select");
+const player2Select = document.querySelector("#player2-select");
+const startDateInput = document.querySelector("#start-date");
+const endDateInput = document.querySelector("#end-date");
+const chartTypeRadios = document.getElementsByName("chart-type");
+const goalsCheckbox = document.querySelector("#goals");
+const assistsCheckbox = document.querySelector("#assists");
+
+
 // Alert and prompt if no participantID
 if (!participantID) {
     alert('Please enter a participant ID.');
@@ -12,14 +23,39 @@ if (!participantID) {
 
 
 const sendMessage = async (event) => {
-    // event.preventDefault();
-    const messageData = {
-        message: inputField.value
-    };
-
-    if (messageData.message.length === 0) {
-        return;
+    // Log selected chart type (radio buttons)
+    let formatNum = null;
+    let selectedChartType = null;
+    for (const radio of chartTypeRadios) {
+        if (radio.checked) {
+            selectedChartType = radio.value;
+            if (selectedChartType === "bar") { // bar
+                if (goalsCheckbox.checked && assistsCheckbox.checked) {
+                    formatNum = 1;
+                } else if (goalsCheckbox.checked) {
+                    formatNum = 2;
+                } else if (assistsCheckbox.checked) {
+                    formatNum = 3;
+                }
+            } else { // line
+                if (goalsCheckbox.checked && assistsCheckbox.checked) {
+                    formatNum = 4;
+                } else if (goalsCheckbox.checked) {
+                    formatNum = 5;
+                } else if (assistsCheckbox.checked) {
+                    formatNum = 6;
+                }
+            }
+            break;
+         }
     }
+
+
+
+    const messageData = {
+        message: `Compare the two following players: ${player1Select.value} and ${player2Select.value} from ${startDateInput.value} to ${endDateInput.value}. Return the format for a ${selectedChartType} chart with ${goalsCheckbox.checked ? 'goals' : ''} ${goalsCheckbox.checked && assistsCheckbox.checked ? 'and' : ''} ${assistsCheckbox.checked ? 'assists' : ''}. ${formatNum ? `The number of the specific format you must return is ${formatNum} - do not deviate from that format WHATSOEVER.` : ''}`
+    };
+    
     messagesContainer.innerHTML += `<p><strong>User:</strong> ${messageData.message}</p>`;
 
     const payload = conversationHistory.length === 0
@@ -47,8 +83,8 @@ const sendMessage = async (event) => {
         messagesContainer.appendChild(searchResultsDiv);
     }
 
-    // console.log(data.botResponse)
-    const results = data.botResponse.split("%%");
+    console.log(data.botResponse)
+    const results = data.botResponse.split("&&");
     console.log(results)
     const chartData = results[1].split("\n");
     console.log(chartData);
@@ -59,7 +95,6 @@ const sendMessage = async (event) => {
     conversationHistory.push({ role: 'assistant', content: data.botResponse});
     messagesContainer.innerHTML += `<p><strong>Bot:</strong> ${data.botResponse}</p>`;
     messagesContainer.innerHTML += `\n-----------------------------------------------------------\n`;
-    inputField.value = "";
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 };
 
@@ -67,19 +102,14 @@ sendBtn.addEventListener("click", function () {
     sendMessage();
 });
 
-inputField.addEventListener("keypress", function (event) {
-    if (event.key === "Enter") {
-      sendMessage();
-    }
-});
 
-inputField.addEventListener('focus', () => {
-    logEvent('focus', 'User Input');
-});
+// inputField.addEventListener('focus', () => {
+//     logEvent('focus', 'User Input');
+// });
 
-inputField. addEventListener('mouseover', () => {
-    logEvent('hover', 'User Input');
-});
+// inputField. addEventListener('mouseover', () => {
+//     logEvent('hover', 'User Input');
+// });
 
 function logEvent(type, element) {
     fetch('/log-event', {
